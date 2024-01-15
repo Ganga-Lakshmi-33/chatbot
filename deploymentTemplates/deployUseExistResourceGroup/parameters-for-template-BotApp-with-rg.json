@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServiceName": {
+      "value": "rbot-webapp"
+    },
+    "existingAppServicePlanName": {
+      "value": "Free Trial"
+    },
+    "existingAppServicePlanLocation": {
+      "value": "eastus"
+    },
+
+    "newAppServicePlanSku": {
+      "value": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
+      }
+    },
+     "appType": {
+             "value": "UserAssignedMSI"
+           },
+           "appId": {
+             "value": "f53ef84b-6958-4e50-ae3b-2c540b826af0"
+           },
+           "appSecret": {
+             "value": ""
+           },
+           "UMSIName": {
+             "value": "Rbot-identity"
+           },
+           "UMSIResourceGroupName": {
+             "value": "ReservationBotApp"
+           },
+           "tenantId": {
+             "value": "62c47d9c-1809-4228-b682-7b02404800f9"
+          }
+        },
+  "resources":[]
+}

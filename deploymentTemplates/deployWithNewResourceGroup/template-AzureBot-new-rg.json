@@ -1,0 +1,115 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "name": "[parameters('groupName')]",
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2018-05-01",
+      "location": "[parameters('groupLocation')]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "storageDeployment",
+      "resourceGroup": "[parameters('groupName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('groupName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2021-03-01",
+              "type": "Microsoft.BotService/botServices",
+              "name": "[parameters('azureBotId')]",
+              "location": "[parameters('azureBotRegion')]",
+              "kind": "azurebot",
+              "sku": {
+                "name": "[parameters('azureBotSku')]"
+              },
+              "properties": {
+                "name": "[parameters('azureBotId')]",
+                "displayName": "[parameters('azureBotId')]",
+                "iconUrl": "https://docs.botframework.com/static/devportal/client/images/bot-framework-default.png",
+                "endpoint": "[parameters('botEndpoint')]",
+                "msaAppId": "[parameters('appId')]",
+                "msaAppTenantId": "[variables('appType').tenantId]",
+                "msaAppMSIResourceId": "[variables('appType').msiResourceId]",
+                "msaAppType": "[parameters('appType')]",
+                "luisAppIds": [],
+                "schemaTransformationVersion": "1.3",
+                "isCmekEnabled": false,
+                "isIsolated": false
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "parameters": {
+    "groupName": {
+      "type": "string"
+    },
+    "groupLocation": {
+      "type": "string"
+    },
+    "azureBotId": {
+      "type": "string"
+    },
+    "azureBotSku": {
+      "type": "string"
+    },
+    "azureBotRegion": {
+      "type": "string"
+    },
+    "botEndpoint": {
+      "type": "string"
+
+    },
+    "appType": {
+      "type": "string"
+    },
+    "appId": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "UMSIName": {
+      "type": "string"
+    },
+    "UMSIResourceGroupName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "tenantId": "[if(empty(parameters('tenantId')), subscription().tenantId, parameters('tenantId'))]",
+    "msiResourceId": "[concat(subscription().id, '/resourceGroups/', parameters('UMSIResourceGroupName'), '/providers/', 'Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('UMSIName'))]",
+    "appTypeDef": {
+      "MultiTenant": {
+        "tenantId": "",
+        "msiResourceId": ""
+      },
+      "SingleTenant": {
+        "tenantId": "[variables('tenantId')]",
+        "msiResourceId": ""
+      },
+      "UserAssignedMSI": {
+        "tenantId": "[variables('tenantId')]",
+        "msiResourceId": "[variables('msiResourceId')]"
+      }
+    },
+    "appType": {
+      "tenantId": "[variables('appTypeDef')[parameters('appType')].tenantId]",
+      "msiResourceId": "[variables('appTypeDef')[parameters('appType')].msiResourceId]"
+    }
+  }
+}
